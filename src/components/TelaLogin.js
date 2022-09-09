@@ -1,13 +1,46 @@
+import { Link, useNavigate } from "react-router-dom";
+import UserContext from '../contexts/UserContext'
+import { useState, useContext } from 'react';
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import axios from "axios";
 
 export default function TelaLogin() {
+
+  const { setToken } = useContext(UserContext);
+
+  const [ email, setEmail ] = useState();
+  const [ password, setPassword ] = useState();
+
+  const navigate = useNavigate();
+
+  function Logar(e){
+    e.preventDefault();
+
+    const URL = 'http://localhost:5000/';
+
+    const body = {
+      email,
+      password
+    }
+
+    const promise = axios.post(URL, body);
+    promise.then((res) => {
+      const { data } = res;
+      setToken(data);
+      navigate('/home');
+    });
+    promise.catch((err) =>{
+      alert('Falha ao fazer o Login.');
+    });
+
+  }
+
   return (
     <Conteiner>
       <h1>MyWallet</h1>
-      <input placeholder="E-mail" />
-      <input placeholder="Senha" />
-      <button>Entrar</button>
+      <input placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} required/>
+      <input placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} required/>
+      <button onClick={Logar}>Entrar</button>
       <Link to="/sign-up">
         <p>Primeira vez? Cadastre-se!</p>
       </Link>

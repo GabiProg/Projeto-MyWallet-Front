@@ -1,18 +1,70 @@
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 
 export default function TelaCadastro() {
+  const [name, setName] = useState();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  const [confirmation, setConfirmation] = useState();
+
+  const navigate = useNavigate();
+
+  function EnviarCadastro(e) {
+    e.preventDefault();
+
+    const URL = "http://localhost:5000/sign-up";
+
+    const body = {
+      name,
+      email,
+      password,
+      confirmation,
+    };
+
+    const promise = axios.post(URL, body);
+    promise.then((res) => {
+      navigate("/");
+    });
+    promise.catch((err) => {
+      alert("Falha ao fazer o cadastro.");
+    });
+  }
+
   return (
     <Conteiner>
       <h1>MyWallet</h1>
-      <input placeholder="Nome" />
-      <input placeholder="E-mail" />
-      <input placeholder="Senha" />
-      <input placeholder="Confirme a senha" />
-      <button>Cadastrar</button>
-      <Link to="/">
-        <p>Já tem uma conta? Entre agora!</p>
-      </Link>
+      <form onSubmit={EnviarCadastro}>
+        <input
+          placeholder="Nome"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <input
+          placeholder="E-mail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          placeholder="Senha"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <input
+          placeholder="Confirme a senha"
+          value={confirmation}
+          onChange={(e) => setConfirmation(e.target.value)}
+          required
+        />
+        <button type="submit">Cadastrar</button>
+        <Link to="/">
+          <p>Já tem uma conta? Entre agora!</p>
+        </Link>
+      </form>
     </Conteiner>
   );
 }
