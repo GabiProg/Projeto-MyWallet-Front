@@ -12,11 +12,12 @@ import TelaSaida from "./TelaSaida";
 import '../assets/Reset.css';
 
 export default function App() {
+  const [ userName, setUserName ] = useState();
   const [ token, setToken ] = useState();
 
   return (
     <>
-      <UserContext.Provider value={{token, setToken}}>
+      <UserContext.Provider value={{userName, setUserName, token, setToken}}>
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<TelaLogin />} />

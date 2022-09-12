@@ -1,12 +1,59 @@
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import styled from "styled-components";
+import axios from "axios";
 
 export default function TelaSaida() {
+  const token = JSON.parse(localStorage.getItem("infoToken"));
+
+  const [description, setDescription] = useState();
+  const [value, setValue] = useState();
+
+  const navigate = useNavigate();
+
+  function TakeCashOut(e) {
+    e.preventDefault();
+
+    const URL = "http://localhost:5000/cashout";
+
+    const body = {
+      description,
+      value,
+    };
+
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    };
+
+    const promise = axios.post(URL, body, config);
+    promise.then((res) => {
+      navigate("/home");
+    });
+    promise.catch((err) => {
+      alert("Falha ao fazer o deposito.");
+    });
+  }
+
   return (
     <Conteiner>
       <h1>Nova saída</h1>
-      <input placeholder="Valor" />
-      <input placeholder="Descrição" />
-      <button>Salvar saída</button>
+      <form onSubmit={TakeCashOut}>
+        <input
+          placeholder="Valor"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          required
+        />
+        <input
+          placeholder="Descrição"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          required
+        />
+        <button type="submit">Salvar saída</button>
+      </form>
     </Conteiner>
   );
 }

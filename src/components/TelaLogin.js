@@ -1,45 +1,69 @@
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import UserContext from '../contexts/UserContext'
-import { useState, useContext } from 'react';
 import styled from "styled-components";
 import axios from "axios";
 
 export default function TelaLogin() {
-
-  const { setToken } = useContext(UserContext);
-
-  const [ email, setEmail ] = useState();
-  const [ password, setPassword ] = useState();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  const [user, setUser] = useState();
 
   const navigate = useNavigate();
 
-  function Logar(e){
+  function Logar(e) {
     e.preventDefault();
 
-    const URL = 'http://localhost:5000/';
+    const URL = "http://localhost:5000/";
 
     const body = {
       email,
-      password
-    }
+      password,
+    };
 
     const promise = axios.post(URL, body);
     promise.then((res) => {
       const { data } = res;
-      setToken(data);
-      navigate('/home');
-    });
-    promise.catch((err) =>{
-      alert('Falha ao fazer o Login.');
-    });
+    
+      navigate("/home");
 
+      setUser(data);
+
+      localStorage.clear();
+      localStorage.setItem("user", JSON.stringify(data));
+      localStorage.setItem("infoToken", JSON.stringify(data.token));
+      localStorage.setItem("infoName", JSON.stringify(data.name));
+    });
+    promise.catch((err) => {
+      alert("Falha ao fazer o Login.");
+    });
   }
+
+  useEffect(() => {
+    const userLogado = localStorage.getItem("user");
+     if (userLogado) {
+       const getUser = JSON.parse(userLogado);
+       setUser(getUser);
+       navigate("/home");
+     } else {
+        navigate("/");
+     }
+  }, []);
 
   return (
     <Conteiner>
       <h1>MyWallet</h1>
-      <input placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} required/>
-      <input placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} required/>
+      <input
+        placeholder="E-mail"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+      <input
+        placeholder="Senha"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
       <button onClick={Logar}>Entrar</button>
       <Link to="/sign-up">
         <p>Primeira vez? Cadastre-se!</p>
